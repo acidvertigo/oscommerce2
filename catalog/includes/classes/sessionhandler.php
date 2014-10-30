@@ -23,7 +23,6 @@ class sessionshandler
       // set SID once, even if empty
       $this->SID = (defined('SID') ? SID : '');
       $this->session_set();
-      $this->session_start();
   }
 
   function session_start() {
@@ -32,7 +31,7 @@ class sessionshandler
         tep_setcookie('cookie_test', 'please_accept_for_session', time() + 60 * 60 * 24 * 30);
 
       if (isset($_COOKIE['cookie_test'])) {
-          tep_session_start();
+        tep_session_start();
           $this->session_started = true;
         }
       } elseif (SESSION_BLOCK_SPIDERS == 'True') {
@@ -64,8 +63,8 @@ class sessionshandler
     }
 
   function session_set() {
-    global $request_type;
-    
+     global $request_type;
+      
     // set the session name and save path
     session_name('osCsid');
     session_save_path(SESSION_WRITE_DIRECTORY);
@@ -112,7 +111,7 @@ class sessionshandler
     }
     
      if (($request_type == 'SSL') && (SESSION_CHECK_SSL_SESSION_ID == 'True') && (ENABLE_SSL == true) && ($this->session_started === true)) {
-         $this->verify_ssl($request_type);
+       $this->verify_ssl($request_type);
      }
   }
 

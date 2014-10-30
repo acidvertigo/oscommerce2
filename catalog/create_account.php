@@ -11,7 +11,7 @@
 */
 
   require('includes/application_top.php');
-
+  
 // needs to be included earlier to set the success message in the messageStack
   require(DIR_WS_LANGUAGES . $_SESSION['language'] . '/' . FILENAME_CREATE_ACCOUNT);
 
@@ -226,8 +226,8 @@
       tep_session_register('customer_country_id');
       tep_session_register('customer_zone_id');
 
-// reset session token
-      $_SESSION['sessiontoken'] = md5(tep_rand() . tep_rand() . tep_rand() . tep_rand());
+// reset session tokenr
+  $session->create_token();  
 
 // restore cart contents
       $_SESSION['cart']->restore_contents();
@@ -248,7 +248,7 @@
       $email_text .= EMAIL_WELCOME . EMAIL_TEXT . EMAIL_CONTACT . EMAIL_WARNING;
       tep_mail($name, $email_address, EMAIL_SUBJECT, $email_text, STORE_OWNER, STORE_OWNER_EMAIL_ADDRESS);
 
-      tep_redirect(tep_href_link(FILENAME_CREATE_ACCOUNT_SUCCESS, '', 'SSL'));
+     tep_redirect(tep_href_link(FILENAME_CREATE_ACCOUNT_SUCCESS, '', 'SSL'));
     }
   }
 

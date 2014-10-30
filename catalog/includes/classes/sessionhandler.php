@@ -64,6 +64,8 @@ class sessionshandler
     }
 
   function session_set() {
+    global $request_type;
+    
     // set the session name and save path
     session_name('osCsid');
     session_save_path(SESSION_WRITE_DIRECTORY);
@@ -110,7 +112,6 @@ class sessionshandler
     }
     
      if (($request_type == 'SSL') && (SESSION_CHECK_SSL_SESSION_ID == 'True') && (ENABLE_SSL == true) && ($this->session_started === true)) {
-         global $request_type;
          $this->verify_ssl($request_type);
      }
   }

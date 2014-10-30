@@ -91,9 +91,9 @@
   }
 
   function tep_session_register($variable) {
-    global $session_started;
+    global $session;
 
-    if ($session_started == true) {
+    if ($session->session_started == true) {
       if (!isset($GLOBALS[$variable])) {
         $GLOBALS[$variable] = null;
       }
@@ -114,14 +114,14 @@
   }
 
   function tep_session_recreate() {
-    global $SID;
+    global $session;
 
       $old_id = session_id();
 
       session_regenerate_id(true);
 
-      if (!empty($SID)) {
-        $SID = session_name() . '=' . session_id();
+      if (!empty($session->SID)) {
+        $session->SID = session_name() . '=' . session_id();
       }
 
       tep_whos_online_update_session_id($old_id, session_id());

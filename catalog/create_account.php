@@ -226,7 +226,7 @@
       tep_session_register('customer_country_id');
       tep_session_register('customer_zone_id');
 
-// reset session tokenr
+// reset session token
   $session->create_token();  
 
 // restore cart contents

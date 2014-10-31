@@ -102,6 +102,25 @@ class sessionshandler
         session_id($_POST[session_name()]);
       }
     }
+  
+  // initialize a session token
+    if (!isset($_SESSION['sessiontoken'])) {
+      $this->create_token();
+    }
+
+    // verify the browser user agent if the feature is enabled
+    if (SESSION_CHECK_USER_AGENT == 'True') {
+        $this->verify_user_agent();
+    }
+
+    // verify the IP address if the feature is enabled
+    if (SESSION_CHECK_IP_ADDRESS == 'True') {
+       $this->verify_ip_address();
+    }
+    
+    if (($request_type == 'SSL') && (SESSION_CHECK_SSL_SESSION_ID == 'True') && (ENABLE_SSL == true) && ($this->session_started === true)) {
+      $this->verify_ssl($request_type);
+    }
     
    
   }

@@ -18,58 +18,62 @@ class sessionshandler
   var $SID = '';
   
   public function __construct() {
-      // set SID once, even if empty
-      $this->SID = (defined('SID') ? SID : '');
-      $this->session_set();
+    // set SID once, even if empty
+    $this->SID = (defined('SID') ? SID : '');
+    $this->session_set();
   }
 
+  // start a session
   function session_start() {
-
+    
     if (SESSION_FORCE_COOKIE_USE == 'True') {
-        $this->session_cookie();
-      } elseif (SESSION_BLOCK_SPIDERS == 'True') {
-        
-        $user_agent = '';
-        
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-         $user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-        }
+      $this->session_cookie();
+    } elseif (SESSION_BLOCK_SPIDERS == 'True') {
+      $this->block_spiders();
+    } else {
+      tep_session_start();
+      $this->session_started = true;
+    }
+  }
 
-        $spider_flag = false;
-        
-        if (!empty($user_agent)) {
-            foreach (file('includes/spiders.txt') as $spider) {
-              if (!empty($spider)) {
-                if (strpos($user_agent, $spider) !== false) {
-                  $spider_flag = true;
-                    break;
-                }
-              }
-            }
-        }
+  // set session cookie parameters
+  function session_cookie(){
+    tep_setcookie('cookie_test', 'please_accept_for_session', time() + 60 * 60 * 24 * 30);
 
-        if ($spider_flag === false) {
-            tep_session_start();
-            $this->session_started = true;
-        }
+    if (isset($_COOKIE['cookie_test'])) {
+      tep_session_start();
+      $this->session_started = true;
+    }
+  }
+    
+  //check if user agent is a spider  
+  function block_spiders() {
+    $user_agent = '';
         
-      } else {
-          tep_session_start();
-          $this->session_started = true;
-      }
-      
-      
+    if (isset($_SERVER['HTTP_USER_AGENT'])) {
+     $user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
     }
 
-    function session_cookie(){
-        tep_setcookie('cookie_test', 'please_accept_for_session', time() + 60 * 60 * 24 * 30);
-
-      if (isset($_COOKIE['cookie_test'])) {
-        tep_session_start();
-        $this->session_started = true;
+    $spider_flag = false;
+        
+    if (!empty($user_agent)) {
+      foreach (file('includes/spiders.txt') as $spider) {
+        if (!empty($spider)) {
+          if (strpos($user_agent, $spider) !== false) {
+            $spider_flag = true;
+            break;
+          }
+        }
       }
     }
 
+    if ($spider_flag === false) {
+      tep_session_start();
+      $this->session_started = true;
+    }
+  }  
+
+  // set session paramters
   function session_set() {
     global $request_type;
       
@@ -130,15 +134,14 @@ class sessionshandler
   function verify_ssl() {
       
     // verify the ssl_session_id if the feature is enabled
-      if (!isset($_SESSION['SSL_SESSION_ID'])) {
-        $_SESSION['SESSION_SSL_ID'] = $_SERVER['SSL_SESSION_ID'];
-      }
+    if (!isset($_SESSION['SSL_SESSION_ID'])) {
+      $_SESSION['SESSION_SSL_ID'] = $_SERVER['SSL_SESSION_ID'];
+    }
 
-      if ($_SESSION['SESSION_SSL_ID'] != $_SERVER['SSL_SESSION_ID']) {
-        tep_session_destroy();
-        tep_redirect(tep_href_link(FILENAME_SSL_CHECK));
-      }
-    
+    if ($_SESSION['SESSION_SSL_ID'] != $_SERVER['SSL_SESSION_ID']) {
+      tep_session_destroy();
+      tep_redirect(tep_href_link(FILENAME_SSL_CHECK));
+    }
   }
 
   function verify_user_agent() {

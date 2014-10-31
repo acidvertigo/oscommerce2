@@ -227,7 +227,7 @@
       tep_session_register('customer_zone_id');
 
 // reset session token
-      $session->create_token();  
+      $session->create_token();
 
 // restore cart contents
       $_SESSION['cart']->restore_contents();

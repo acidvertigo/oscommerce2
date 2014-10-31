@@ -15,10 +15,8 @@ class sessionshandler
 {
 
   var $session_started = false;
-  var $spider_flag = false;
-  var $user_agent = '';
   var $SID = '';
-
+  
   public function __construct() {
       // set SID once, even if empty
       $this->SID = (defined('SID') ? SID : '');
@@ -28,30 +26,29 @@ class sessionshandler
   function session_start() {
 
     if (SESSION_FORCE_COOKIE_USE == 'True') {
-        tep_setcookie('cookie_test', 'please_accept_for_session', time() + 60 * 60 * 24 * 30);
-
-      if (isset($_COOKIE['cookie_test'])) {
-        tep_session_start();
-          $this->session_started = true;
-        }
+        $this->session_cookie();
       } elseif (SESSION_BLOCK_SPIDERS == 'True') {
-
+        
+        $user_agent = '';
+        
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
-         $this->user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
+         $user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
         }
 
-        if (!empty($this->user_agent)) {
+        $spider_flag = false;
+        
+        if (!empty($user_agent)) {
             foreach (file('includes/spiders.txt') as $spider) {
               if (!empty($spider)) {
-                if (strpos($this->user_agent, $spider) !== false) {
-                  $this->spider_flag = true;
+                if (strpos($user_agent, $spider) !== false) {
+                  $spider_flag = true;
                     break;
                 }
               }
             }
         }
 
-        if ($this->spider_flag === false) {
+        if ($spider_flag === false) {
             tep_session_start();
             $this->session_started = true;
         }
@@ -60,10 +57,21 @@ class sessionshandler
           tep_session_start();
           $this->session_started = true;
       }
+      
+      
+    }
+
+    public function session_cookie(){
+        tep_setcookie('cookie_test', 'please_accept_for_session', time() + 60 * 60 * 24 * 30);
+
+      if (isset($_COOKIE['cookie_test'])) {
+        tep_session_start();
+        $this->session_started = true;
+      }
     }
 
   function session_set() {
-     global $request_type;
+    global $request_type;
       
     // set the session name and save path
     session_name('osCsid');
@@ -95,24 +103,7 @@ class sessionshandler
       }
     }
     
-    // initialize a session token
-    if (!isset($_SESSION['sessiontoken'])) {
-      $this->create_token();
-    }
-
-    // verify the browser user agent if the feature is enabled
-    if (SESSION_CHECK_USER_AGENT == 'True') {
-        $this->verify_user_agent();
-    }
-
-    // verify the IP address if the feature is enabled
-    if (SESSION_CHECK_IP_ADDRESS == 'True') {
-       $this->verify_ip_address();
-    }
-    
-     if (($request_type == 'SSL') && (SESSION_CHECK_SSL_SESSION_ID == 'True') && (ENABLE_SSL == true) && ($this->session_started === true)) {
-       $this->verify_ssl($request_type);
-     }
+   
   }
 
   function create_token() {
@@ -120,8 +111,8 @@ class sessionshandler
   }
 
   function verify_ssl($request_type) {
+      
     // verify the ssl_session_id if the feature is enabled
-   
       if (!isset($_SESSION['SSL_SESSION_ID'])) {
         $_SESSION['SESSION_SSL_ID'] = $_SERVER['SSL_SESSION_ID'];
       }

@@ -92,7 +92,7 @@
 // define how the session functions will be used
   require('includes/functions/sessions.php');
   require('includes/classes/sessionhandler.php');
-  $session = new sessionshandler;
+  $session = new sessionshandler($request_type);
   
   $session->session_start();
 

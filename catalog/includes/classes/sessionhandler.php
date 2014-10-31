@@ -119,17 +119,15 @@ class sessionshandler
     }
     
     if (($request_type == 'SSL') && (SESSION_CHECK_SSL_SESSION_ID == 'True') && (ENABLE_SSL == true) && ($this->session_started === true)) {
-      $this->verify_ssl($request_type);
+      $this->verify_ssl();
     }
-    
-   
   }
 
   function create_token() {
     $_SESSION['sessiontoken'] = md5(tep_rand().tep_rand().tep_rand().tep_rand());
   }
 
-  function verify_ssl($request_type) {
+  function verify_ssl() {
       
     // verify the ssl_session_id if the feature is enabled
       if (!isset($_SESSION['SSL_SESSION_ID'])) {

@@ -17,10 +17,21 @@ class sessionshandler
   var $session_started = false;
   var $SID = '';
   
-  public function __construct() {
+  public function __construct($request_type) {
     // set SID once, even if empty
     $this->SID = (defined('SID') ? SID : '');
-    $this->session_set();
+    
+    if ($request_type = 'SSL') {
+      // set the cookie domain
+      $cookie_domain = HTTPS_COOKIE_DOMAIN;
+      $cookie_path = HTTPS_COOKIE_PATH;
+    } else {
+      // set the cookie domain
+      $cookie_domain = HTTP_COOKIE_DOMAIN;
+      $cookie_path = HTTP_COOKIE_PATH;
+    }
+    
+    $this->session_set($request_type, $cookie_domain, $cookie_path);
   }
 
   // start a session
@@ -53,44 +64,29 @@ class sessionshandler
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
      $user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
     }
-
-    $spider_flag = false;
-        
-    if (!empty($user_agent)) {
-      foreach (file('includes/spiders.txt') as $spider) {
-        if (!empty($spider)) {
-          if (strpos($user_agent, $spider) !== false) {
-            $spider_flag = true;
-            break;
-          }
-        }
-      }
-    }
-
-    if ($spider_flag === false) {
+    
+    if (!empty($user_agent) && (!$this->check_spider($user_agent))) {
       tep_session_start();
       $this->session_started = true;
     }
   }  
 
+  function check_spider($user_agent) {
+    foreach (file('includes/spiders.txt') as $spider) {
+      if (!empty($spider)) {
+        if (strpos($user_agent, $spider) !== false) {
+          return true;
+        }
+      }
+    }
+  }   
   // set session paramters
-  function session_set() {
-    global $request_type;
+  function session_set($request_type, $cookie_domain, $cookie_path) {
       
     // set the session name and save path
     session_name('osCsid');
     session_save_path(SESSION_WRITE_DIRECTORY);
-        
-    if ($request_type = 'SSL') {
-      // set the cookie domain
-      $cookie_domain = HTTPS_COOKIE_DOMAIN;
-      $cookie_path = HTTPS_COOKIE_PATH;
-    } else {
-      // set the cookie domain
-      $cookie_domain = HTTP_COOKIE_DOMAIN;
-      $cookie_path = HTTP_COOKIE_PATH;
-    }
-        
+    
     // set the session cookie parameters
     session_set_cookie_params(0, $cookie_path, $cookie_domain);
 

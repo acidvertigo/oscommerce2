@@ -61,7 +61,7 @@ class sessionshandler
       
     }
 
-    public function session_cookie(){
+    function session_cookie(){
         tep_setcookie('cookie_test', 'please_accept_for_session', time() + 60 * 60 * 24 * 30);
 
       if (isset($_COOKIE['cookie_test'])) {

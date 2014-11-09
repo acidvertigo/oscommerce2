@@ -77,9 +77,9 @@
     }
 
     function execute() {
-      global $SID, $oscTemplate;
+      global $session, $oscTemplate;
 
-      if ((USE_CACHE == 'true') && empty($SID)) {
+      if ((USE_CACHE == 'true') && empty($session->SID)) {
         $output = tep_cache_manufacturers_box();
       } else {
         $output = $this->getData();

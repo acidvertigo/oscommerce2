@@ -13,7 +13,7 @@
 ////
 // The HTML href link wrapper function
   function tep_href_link($page = '', $parameters = '', $connection = 'NONSSL', $add_session_id = true, $search_engine_safe = true) {
-    global $request_type, $session_started, $SID;
+    global $request_type, $session;
 
     $page = tep_output_string($page);
 
@@ -44,9 +44,9 @@
     while ( (substr($link, -1) == '&') || (substr($link, -1) == '?') ) $link = substr($link, 0, -1);
 
 // Add the session ID when moving from different HTTP and HTTPS servers, or when SID is defined
-    if ( ($add_session_id == true) && ($session_started == true) && (SESSION_FORCE_COOKIE_USE == 'False') ) {
-      if (tep_not_null($SID)) {
-        $_sid = $SID;
+    if ( ($add_session_id == true) && ($session->session_started == true) && (SESSION_FORCE_COOKIE_USE == 'False') ) {
+      if (tep_not_null($session->SID)) {
+        $_sid = $session->SID;
       } elseif ( ( ($request_type == 'NONSSL') && ($connection == 'SSL') && (ENABLE_SSL == true) ) || ( ($request_type == 'SSL') && ($connection == 'NONSSL') ) ) {
         if (HTTP_COOKIE_DOMAIN != HTTPS_COOKIE_DOMAIN) {
           $_sid = session_name() . '=' . session_id();
@@ -288,9 +288,9 @@
 ////
 // Hide form elements
   function tep_hide_session_id() {
-    global $session_started, $SID;
+    global $session;
 
-    if (($session_started == true) && tep_not_null($SID)) {
+    if (($session->session_started == true) && tep_not_null($session->SID)) {
       return tep_draw_hidden_field(session_name(), session_id());
     }
   }

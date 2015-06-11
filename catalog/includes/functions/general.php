@@ -197,7 +197,7 @@
   function tep_get_countries_with_iso_codes($countries_id) {
     return tep_get_countries($countries_id, true);
   }
-
+pa
 ////
 // Generate a path to categories
   function tep_get_path($current_category_id = '') {
@@ -1290,7 +1290,7 @@
 // Parse and secure the cPath parameter values
   function tep_parse_category_path($cPath) {
 // make sure the category IDs are integers
-    $cPath_array = array_map(function ($string) {
+    return array_map(function ($string) {
       return (int)$string;
     }, explode('_', $cPath));
 
